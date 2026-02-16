@@ -1,0 +1,22 @@
+paths:
+  clean_dir: "/home/adupa/50_samples clean"
+  marked_dir: "/home/adupa/50_marked_selective"
+
+embed:
+  enabled: true
+  suffix: "_selwm"
+  alpha: 0.8
+  device: "cuda"
+  win_sec: 1.5
+  fade_ms: 50
+  top_k: 2
+  silence_rel: 0.15
+  max_mark_fraction: 0.60
+  bands: "20-300,300-3000,3000-7600"
+  message_bits: null
+
+eval:
+  enabled: true
+  out_dir: "./outputs"
+  compute_marked_pesq: true
+  compute_marked_detection: true

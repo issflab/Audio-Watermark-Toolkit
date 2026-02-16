@@ -1,0 +1,12 @@
+numpy==1.26.4
+scipy==1.12.0
+soundfile==0.13.0
+pandas==2.2.3
+PyYAML==6.0.2
+
+# AudioSeal + torch/torchaudio (install torch/torchaudio per your CPU/CUDA)
+audioseal
+
+# PESQ (try pesq first; if it fails to build, uninstall and use pypesq)
+pesq
+# pypesq
