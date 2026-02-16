@@ -1,4 +1,4 @@
-# Watermark-only toolkit (Embed • Detect • PESQ)
+# Watermark toolkit (Embed • Detect • PESQ)
 
 Minimal, attack-free toolkit for AudioSeal watermarking, detection, and PESQ scoring.
 
