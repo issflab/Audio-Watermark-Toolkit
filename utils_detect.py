@@ -24,11 +24,16 @@ def load_detector(device: torch.device):
 
 
 @torch.no_grad()
-def detect_prob(detector, wav_path: Path, device: torch.device) -> Optional[float]:
+def detect_prob(detector, wav_path: Path, device: torch.device, sample_rate: int = 16000) -> Optional[float]:
     try:
-        wav, _sr = read_wav_mono(wav_path)
+        wav, sr = read_wav_mono(wav_path)
+        if sr != sample_rate:
+            import math
+            from scipy.signal import resample_poly
+            g = math.gcd(sr, sample_rate)
+            wav = resample_poly(wav, sample_rate // g, sr // g).astype("float32")
         x = torch.from_numpy(wav).unsqueeze(0).unsqueeze(0).to(device)
-        prob, _ = detector.detect_watermark(x)
+        prob, _ = detector.detect_watermark(x, sample_rate=sample_rate)
         return float(prob.item())
     except Exception:
         return None

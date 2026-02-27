@@ -1,12 +1,13 @@
+# Demo config: single file (demo_audio.mp3 -> wav), user "kamala", then eval + attacks
 paths:
-  clean_dir: "/home/adupa/50_samples clean"
-  marked_dir: "/home/adupa/50_marked_selective"
+  clean_dir: "demo/clean"
+  marked_dir: "demo/marked"
 
 embed:
   enabled: true
   suffix: "_selwm"
   alpha: 0.8
-  device: "cuda"
+  device: "cpu"
   win_sec: 1.5
   fade_ms: 50
   top_k: 2
@@ -18,6 +19,6 @@ embed:
 
 eval:
   enabled: true
-  out_dir: "./outputs"
+  out_dir: "demo/outputs"
   compute_marked_pesq: true
   compute_marked_detection: true

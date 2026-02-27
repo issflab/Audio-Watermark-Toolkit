@@ -7,6 +7,10 @@ PyYAML==6.0.2
 # AudioSeal + torch/torchaudio (install torch/torchaudio per your CPU/CUDA)
 audioseal
 
-# PESQ (try pesq first; if it fails to build, uninstall and use pypesq)
+# PESQ (optional; for quality scores in demo/eval)
+# On Windows, building may require: Microsoft C++ Build Tools
+# If install fails, pipeline still runs; PESQ scores will be N/A
 pesq
-# pypesq
+
+# MP3 and format conversion (run_demo, attacks); requires ffmpeg on PATH
+pydub

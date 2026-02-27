@@ -2,8 +2,12 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
+
 import yaml
+
+from utils_attribution import derive_message_bits
 
 
 def load_config(path: str | Path) -> dict:
@@ -19,6 +23,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="config.yaml")
     ap.add_argument("--step", default="all", choices=["embed", "eval", "all"])
+    ap.add_argument("--api_key", default="")
+    ap.add_argument("--user_id", default="")
+    ap.add_argument("--request_time", default="")  # ISO string recommended
+    ap.add_argument("--nonce", default="")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -32,6 +40,17 @@ def main():
         from utils_embed import watermark_folder_selective
 
         e = cfg["embed"]
+        # Auto-attribution: derive message_bits from user/request metadata (secret from env only).
+        secret = os.environ.get("WATERMARK_SECRET", "")
+        if secret and args.api_key and args.user_id and args.request_time:
+            e["message_bits"] = derive_message_bits(
+                secret_key=secret,
+                api_key=args.api_key,
+                user_id=args.user_id,
+                request_time=args.request_time,
+                nonce=args.nonce,
+                bit_len=int(e.get("message_bit_len", 16)),
+            )
         ensure_dir(marked_dir)
         watermark_folder_selective(
             input_dir=clean_dir,

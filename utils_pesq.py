@@ -10,8 +10,10 @@ from scipy.signal import resample_poly
 
 try:
     from pesq import pesq as _pesq
+    _PESQ_AVAILABLE = True
 except Exception:
     _pesq = None
+    _PESQ_AVAILABLE = False
 
 
 def to_mono(x: np.ndarray) -> np.ndarray:
@@ -34,11 +36,29 @@ def align(a: np.ndarray, b: np.ndarray):
 
 def pesq_wb(ref: np.ndarray, test: np.ndarray, sr: int = 16000) -> float:
     if _pesq is None:
-        raise RuntimeError("pesq not installed/imported. Try `pip install pesq` or `pip install pypesq`.")
-    return float(_pesq(sr, ref, test, "wb"))
+        raise RuntimeError(
+            "PESQ not available. Install with: pip install pesq (on Windows you may need Microsoft C++ Build Tools)."
+        )
+    # PESQ expects 16 kHz; minimum length ~0.5s for stable score
+    min_len = 8000 if sr == 16000 else int(0.5 * sr)
+    if len(ref) < min_len or len(test) < min_len:
+        raise ValueError(f"PESQ needs at least {min_len} samples at {sr} Hz (got {len(ref)}, {len(test)})")
+    out = _pesq(sr, ref.astype(np.float64), test.astype(np.float64), "wb")
+    score = float(out)
+    if not np.isfinite(score):
+        raise ValueError("PESQ returned non-finite value (e.g. non-speech or invalid signal)")
+    return score
+
+
+def pesq_available() -> bool:
+    """Return True if PESQ can be used (for reporting in demos)."""
+    return _PESQ_AVAILABLE
 
 
 def pesq_pair_files(ref_path: str | Path, test_path: str | Path) -> Optional[float]:
+    """Compute wideband PESQ (ref vs test). Returns None if PESQ unavailable or signal invalid."""
+    if not _PESQ_AVAILABLE:
+        return None
     try:
         ref, sr1 = sf.read(str(ref_path), always_2d=False)
         test, sr2 = sf.read(str(test_path), always_2d=False)
